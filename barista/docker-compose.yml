@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+
+  ollama:
+    image: ollama/ollama
+    network_mode: host
+    cpus: 4
+    mem_limit: 8g
+    mem_reservation: 4g
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+ 
+volumes:
+  postgres_data:
+  ollama_data:
+
+  
