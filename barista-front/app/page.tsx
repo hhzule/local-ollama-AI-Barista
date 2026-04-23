@@ -47,39 +47,33 @@ const StarbucksBarista: React.FC = () => {
     setLoading(true);
 
     try {
-       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chats/message/${threadId}`,{
-        method:'POST',
-         headers: {
-      'Content-Type': 'application/json',  // ← This was missing!
-    },
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chats/message/${threadId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',  // ← This was missing!
+        },
         body: JSON.stringify({ query: input })
       })
-      // axios.post<AIResponse>(
-      //   `${process.env.NEXT_PUBLIC_API_URL}/chats/message/${threadId}`,
-      //   { query: input }
-      // );
-  console.log("response", response)
-  console.log("response status:", response.status);
-console.log("response headers:", response.headers);
+      axios.post<AIResponse>(
+        `${process.env.NEXT_PUBLIC_API_URL}/chats/message/${threadId}`,
+        { query: input }
+      );
 
-// Get raw text first, don't try to parse as JSON yet
-const rawResponse = await response.text();
-console.log("RAW RESPONSE:", rawResponse);
-console.log("RAW RESPONSE TYPE:", typeof rawResponse);
-console.log("RAW RESPONSE LENGTH:", rawResponse.length);
-    const aiResponse = JSON.parse(rawResponse);
-      console.log("aiResponse", aiResponse)
+      // Get raw text first, don't try to parse as JSON yet
+      const rawResponse = await response.text();
+
       // Add AI message to chat
-      // const aiMessage: Message = { 
-      //   role: 'assistant', 
-      //   content: aiResponse.data.message 
-      // };
-      // setMessages(prev => [...prev, aiMessage]);
-      
+      const aiMessage: Message = {
+        role: 'assistant',
+        // content: aiResponse.data.message 
+        content: rawResponse
+      };
+      setMessages(prev => [...prev, aiMessage]);
+
       // // Update order status
       // setCurrentOrder(aiResponse.current_order);
       // setSuggestions(aiResponse.suggestions || []);
-      
+
       // // Check if order is completed
       // if (aiResponse.progress === 'completed') {
       //   alert('Your order has been placed! 🎉');
@@ -92,7 +86,7 @@ console.log("RAW RESPONSE LENGTH:", rawResponse.length);
 
     } catch (error) {
       console.error('Error:', error);
-      
+
       let errorMessage = 'Sorry, I encountered an error. Please try again.';
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 400) {
@@ -101,10 +95,10 @@ console.log("RAW RESPONSE LENGTH:", rawResponse.length);
           errorMessage = 'Cannot connect to the server. Please make sure the backend is running.';
         }
       }
-      
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: errorMessage 
+
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: errorMessage
       }]);
     } finally {
       setLoading(false);
@@ -132,7 +126,7 @@ console.log("RAW RESPONSE LENGTH:", rawResponse.length);
   return (
     <div className="starbucks-barista">
       <h2>☕ Starbucks AI Barista</h2>
-      
+
       {/* Current Order Display */}
       {currentOrder && Object.keys(currentOrder).length > 0 && (
         <div className="current-order">
@@ -147,8 +141,8 @@ console.log("RAW RESPONSE LENGTH:", rawResponse.length);
           <h3>Suggestions:</h3>
           <div className="suggestion-buttons">
             {suggestions.map((suggestion, idx) => (
-              <button 
-                key={idx} 
+              <button
+                key={idx}
                 onClick={() => handleSuggestionClick(suggestion)}
                 disabled={loading}
               >
@@ -280,6 +274,7 @@ console.log("RAW RESPONSE LENGTH:", rawResponse.length);
           padding: 10px 15px;
           border-radius: 8px;
           max-width: 80%;
+           color: black;
         }
 
         .message.user {
